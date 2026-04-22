@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Área Teste - Serra Dourada PA</name>
+    <description>Área de prospecção de teste no Pará, Brasil. Use este arquivo para testar o LAB AI GOLD.</description>
+    <Style id="areaStyle">
+      <LineStyle><color>ff0000ff</color><width>2</width></LineStyle>
+      <PolyStyle><color>330000ff</color></PolyStyle>
+    </Style>
+    <Placemark>
+      <name>Serra Dourada - Área Principal</name>
+      <description>Polígono de prospecção de teste com ~8.500 hectares</description>
+      <styleUrl>#areaStyle</styleUrl>
+      <Polygon>
+        <extrude>1</extrude>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -49.850000,-6.120000,0
+              -49.750000,-6.120000,0
+              -49.700000,-6.150000,0
+              -49.680000,-6.200000,0
+              -49.700000,-6.280000,0
+              -49.760000,-6.320000,0
+              -49.840000,-6.310000,0
+              -49.900000,-6.270000,0
+              -49.920000,-6.210000,0
+              -49.890000,-6.150000,0
+              -49.850000,-6.120000,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>

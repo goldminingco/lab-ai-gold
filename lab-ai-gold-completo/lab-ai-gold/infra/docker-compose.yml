@@ -1,0 +1,98 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgis/postgis:15-3.4
+    container_name: lab_ai_gold_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-labai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-labai_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-labai_gold}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-labai} -d ${POSTGRES_DB:-labai_gold}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    container_name: lab_ai_gold_migrate
+    env_file:
+      - ../apps/api/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-labai}:${POSTGRES_PASSWORD:-labai_secret}@db:5432/${POSTGRES_DB:-labai_gold}
+      DATABASE_SYNC_URL: postgresql+psycopg2://${POSTGRES_USER:-labai}:${POSTGRES_PASSWORD:-labai_secret}@db:5432/${POSTGRES_DB:-labai_gold}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+    restart: "no"
+
+  seed:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    container_name: lab_ai_gold_seed
+    env_file:
+      - ../apps/api/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-labai}:${POSTGRES_PASSWORD:-labai_secret}@db:5432/${POSTGRES_DB:-labai_gold}
+      DATABASE_SYNC_URL: postgresql+psycopg2://${POSTGRES_USER:-labai}:${POSTGRES_PASSWORD:-labai_secret}@db:5432/${POSTGRES_DB:-labai_gold}
+      SEED_ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@labai.gold}
+      SEED_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    command: python seed.py
+    restart: "no"
+
+  api:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    container_name: lab_ai_gold_api
+    restart: unless-stopped
+    env_file:
+      - ../apps/api/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-labai}:${POSTGRES_PASSWORD:-labai_secret}@db:5432/${POSTGRES_DB:-labai_gold}
+      DATABASE_SYNC_URL: postgresql+psycopg2://${POSTGRES_USER:-labai}:${POSTGRES_PASSWORD:-labai_secret}@db:5432/${POSTGRES_DB:-labai_gold}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../apps/api:/app
+      - api_uploads:/app/uploads
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  web:
+    build:
+      context: ../apps/web
+      dockerfile: Dockerfile
+    container_name: lab_ai_gold_web
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      INTERNAL_API_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  api_uploads:
