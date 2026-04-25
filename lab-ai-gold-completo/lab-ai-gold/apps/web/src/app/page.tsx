@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 // ─── Ícones inline (sem dependência extra no Sprint 0) ────────────────────────
 function IconMap() {
@@ -103,10 +104,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gold-gradient flex items-center justify-center shadow-lg"
-                 style={{ boxShadow: "0 0 16px rgba(245,158,11,0.4)" }}>
-              <span className="text-dark-900 font-bold text-sm">⬡</span>
-            </div>
+            <Image src="/logo.png" alt="LAB AI GOLD" width={36} height={36} className="rounded-lg shadow-lg" priority />
             <span className="font-bold text-lg tracking-tight text-gold-gradient">LAB AI GOLD</span>
           </div>
 
