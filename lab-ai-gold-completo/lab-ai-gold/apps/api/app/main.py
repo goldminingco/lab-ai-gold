@@ -20,7 +20,7 @@ from app.db.session import engine
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup e shutdown da aplicacao."""
-        print(f"[startup] {settings.APP_NAME} v{settings.APP_VERSION} iniciando...")
+    print(f"[startup] {settings.APP_NAME} v{settings.APP_VERSION} iniciando...")
     print(f"  Ambiente : {settings.ENVIRONMENT}")
     print(f"  DB URL   : {settings.DATABASE_URL[:40]}...")
     yield
