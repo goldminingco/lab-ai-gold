@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,10 +31,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gold-gradient flex items-center justify-center"
-                 style={{ boxShadow: "0 0 20px rgba(245,158,11,0.4)" }}>
-              <span className="text-dark-900 font-bold">⬡</span>
-            </div>
+                          <Image src="/logo.png" alt="LAB AI GOLD" width={40} height={40} className="rounded-xl" priority />
             <span className="text-2xl font-bold text-gold-gradient">LAB AI GOLD</span>
           </div>
           <h1 className="text-2xl font-bold text-neutral-100">Entrar na plataforma</h1>
