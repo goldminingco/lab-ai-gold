@@ -1,15 +1,13 @@
 FROM node:20-alpine
+   WORKDIR /app
 
-WORKDIR /app
+   COPY package.json package-lock.json* ./
+   RUN npm install
 
-# Instala dependências primeiro (cache de layers)
-COPY package.json package-lock.json* ./
-RUN npm install
+   COPY . .
 
-# Copia o restante do código
-COPY . .
+   RUN npm run build
 
-EXPOSE 3000
-
-# Em desenvolvimento, roda com hot reload
-CMD ["npm", "run", "dev"]
+   EXPOSE 3000
+   CMD ["npm", "run", "start"]
+   
